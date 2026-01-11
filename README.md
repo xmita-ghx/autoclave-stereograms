@@ -1,13 +1,21 @@
 # autoclave-stereograms
-A browser-based AI application that converts standard 2D images into 3D visual experiences. The system uses Computer Vision to estimate depth and Image Processing to generate two distinct types of stereoscopic outputs based on that data. MODE 1: Duplicates and shifts pixels for parallax. MODE 2: Embeds depth map into repeating noise patterns.
+A browser-based AI application that converts standard 2D images into 3D visual experiences called **Stereograms.** The system uses Computer Vision to estimate depth and Image Processing to generate two distinct types of stereoscopic outputs based on that data.
+
+MODE 1: *Stereogram (Side-by-Side):* Creates 3D by duplicating the image and applying a horizontal pixel shift proportional to the depth map. This simulates binocular parallax, tricking the brain into seeing depth when eyes are crossed.
+
+MODE 2: *Autostereogram (Hidden):* Generates an autostereogram by embedding the depth map into a repeating random noise pattern. The hidden 3D shape emerges only when the viewer decouple their eye focus.
+
+---
+**What is a stereogram?**
+A stereogram is a 2D image designed to trick the brain into perceiving a 3-dimensional scene. It works by exploiting binocular vision: because our eyes are set apart, they usually view objects from two slightly different angles (parallax), which the brain merges to calculate depth.
 
 ---
 
 ### 1. The Core Process
 
-* **Depth Estimation:** When an image (strictly between 1MB and 5MB) is uploaded, the AI analyzes it to create a "Depth Map." This is a grayscale representation where white pixels represent "near" objects and black pixels represent the "background."
+* **Depth Estimation:** When an image is uploaded, the AI analyzes it to create a "Depth Map." This is a grayscale representation where white pixels represent "near" objects and black pixels represent the "background."
 * **Mode 1: Side-by-Side (SBS):** The app duplicates the image and horizontally shifts pixels based on the depth map. This creates a **Parallax Effect**, mimicking how our eyes see slightly different perspectives.
-* **Mode 2: Magic Eye:** The app generates a random noise pattern and "embeds" the depth map into it by repeating the pattern at specific intervals. The user sees a grayscale preview of the depth map before the final result is generated.
+* **Mode 2: Magic Eye (Hidden):** The app generates a random noise pattern and "embeds" the depth map into it by repeating the pattern at specific intervals. The user sees a grayscale preview of the depth map before the final result is generated.
 
 ---
 
@@ -26,5 +34,5 @@ A browser-based AI application that converts standard 2D images into 3D visual e
 ### 3. Key Constraints
 
 * **Input Hardware:** The code is optimized for both CPU and GPU (CUDA) processing.
-* **File Integrity:** A strict gatekeeper ensures images are within the **1MB to 5MB** range to guarantee enough pixel data for sharp 3D outlines.
+* **File Integrity:** A strict gatekeeper ensures images are within the **1.5MB to 5MB** range to guarantee enough pixel data for sharp 3D outlines.
 * **Outline Fidelity:** We use **Bicubic Interpolation** and a custom **Mask-Filling algorithm** to ensure the 3D result stays strictly aligned with the original image's silhouette.
