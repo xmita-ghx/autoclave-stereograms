@@ -10,7 +10,7 @@ def apply_custom_theme():
         <style>
         /* Main background and text */
         .stApp {
-            background-color: #000000;
+            background-color: #7A0D26; /* Changed from #000000 */
             color: #FFFFFF;
         }
         
