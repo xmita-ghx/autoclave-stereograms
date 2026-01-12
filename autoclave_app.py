@@ -67,7 +67,7 @@ st.title("AUTOCLAVE:")
 st.title("2D TO 3D STEREOGRAM CONVERTER")
 
 # Updated label to explicitly show the 5MB limit
-file = st.file_uploader("Upload Image (MAXIMUM: 5MB) [Start with simple shapes! They should be high contrast images!]", type=['jpg', 'jpeg', 'png'])
+file = st.file_uploader("Upload Image (MAXIMUM: 5MB)  [Start with simple shapes! They should be high contrast images!]", type=['jpg', 'jpeg', 'png'])
 
 if file:
     # --- STRICT SIZE RANGE CHECK ---
