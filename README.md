@@ -8,7 +8,15 @@ MODE 2: *Autostereogram (Hidden):* Generates an autostereogram by embedding the 
 ---
 **What is a stereogram?**
 A stereogram is a 2D image designed to trick the brain into perceiving a 3-dimensional scene. It works by exploiting binocular vision: because our eyes are set apart, they usually view objects from two slightly different angles (parallax), which the brain merges to calculate depth.
+---
+**How to view a stereogram?**
+1) Get Close: Put your nose right against the screen. The image should be completely blurry.
+2) Stare Through: Relax your eyes. Pretend you are looking through the screen at a wall far behind it. Do not try to focus on the image.
+3) Pull Back Slowly: Very slowly move your head away from the screen (about 1 inch per second).
+4) Hold the Stare: Keep your eyes "daydreaming" and unfocused. When you reach about 10–12 inches away, the patterns will start to overlap.
+5) Wait for the Snap: A 3D shape will suddenly "pop" out. Once you see the blurry outline, stay still, and your eyes will naturally snap the image into sharp focus.
 
+   Check the Depth Map in your app first so your brain knows what shape to look for!
 ---
 
 ### 1. The Core Process
