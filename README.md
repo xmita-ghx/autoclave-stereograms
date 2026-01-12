@@ -7,7 +7,9 @@ MODE 2: *Autostereogram (Hidden):* Generates an autostereogram by embedding the 
 
 ---
 **What is a stereogram?**
+
 A stereogram is a 2D image designed to trick the brain into perceiving a 3-dimensional scene. It works by exploiting binocular vision: because our eyes are set apart, they usually view objects from two slightly different angles (parallax), which the brain merges to calculate depth.
+
 ---
 **How to view a stereogram?**
 1) Get Close: Put your nose right against the screen. The image should be completely blurry.
