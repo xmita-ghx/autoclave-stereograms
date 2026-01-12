@@ -1,5 +1,5 @@
 # autoclave-stereograms
-A browser-based AI application that converts standard 2D images into 3D visual experiences called **Stereograms.** The system uses Computer Vision to estimate depth and Image Processing to generate two distinct types of stereoscopic outputs based on that data.
+The browser-based AI application (https://autoclave-stereograms.streamlit.app/) that converts standard 2D images into 3D visual experiences called **Stereograms.** The system uses Computer Vision to estimate depth and Image Processing to generate two distinct types of stereoscopic outputs based on that data.
 
 MODE 1: *Stereogram (Side-by-Side):* Creates 3D by duplicating the image and applying a horizontal pixel shift proportional to the depth map. This simulates binocular parallax, tricking the brain into seeing depth when eyes are crossed.
 
