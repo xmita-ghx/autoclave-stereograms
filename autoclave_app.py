@@ -16,7 +16,7 @@ def apply_custom_theme():
         
         /* Headers and text color */
         h1, h2, h3, p, span, label {
-            color: #FFFFFF !important;
+        color: #000000 !important;
         }
 
         /* Gold borders for image containers and uploaders */
