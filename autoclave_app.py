@@ -5,7 +5,6 @@ import numpy as np
 from PIL import Image
 import io
 
-# 1. SETUP & CUSTOM CSS (Black background, Gold borders, Purple buttons)
 def apply_custom_theme():
     st.markdown("""
         <style>
@@ -47,7 +46,6 @@ def apply_custom_theme():
         </style>
     """, unsafe_allow_html=True)
 
-# 2. AI MODEL LOADING
 @st.cache_resource
 def load_model():
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -57,7 +55,6 @@ def load_model():
     transforms = torch.hub.load("intel-isl/MiDaS", "transforms").small_transform
     return model, transforms, device
 
-# 3. HIGH-CONTRAST PREPROCESSING
 def enhance_contrast(img):
     img_np = np.array(img)
     # Convert to lab color space for better contrast manipulation
@@ -70,7 +67,6 @@ def enhance_contrast(img):
     enhanced_rgb = cv2.cvtColor(enhanced_lab, cv2.COLOR_LAB2RGB)
     return Image.fromarray(enhanced_rgb)
 
-# 4. CONVERSION LOGIC
 def make_sbs(img, depth, max_shift=15):
     w, h = img.size
     img_np = np.array(img)
@@ -100,7 +96,6 @@ def make_magic_eye(depth, pattern_div=8):
             output[y, x] = output[y, x - pattern_w + shifts[y, x]]
     return Image.fromarray(output)
 
-# 5. STREAMLIT UI
 st.set_page_config(page_title="3D Stereogram Creator", layout="centered")
 apply_custom_theme()
 
@@ -116,17 +111,17 @@ if file:
     else:
         img = Image.open(file).convert("RGB")
         
-        # DISPLAY ORIGINAL
+
         st.image(img, caption="Original Image", width=300)
         
         mode = st.radio("Choose 3D Mode:", ["Side-by-Side (Stereopair)", "Autostereogram (Hidden)"])
         
         if st.button("Generate 3D View"):
             with st.spinner("Enhancing contrast & calculating depth..."):
-                # STEP 1: Increase Contrast
+                
                 enhanced_img = enhance_contrast(img)
                 
-                # STEP 2: Depth Mapping on Enhanced Image
+                
                 model, transform, device = load_model()
                 img_cv = cv2.cvtColor(np.array(enhanced_img), cv2.COLOR_RGB2BGR)
                 input_batch = transform(img_cv).to(device)
@@ -137,7 +132,7 @@ if file:
                         prediction.unsqueeze(1), size=img_cv.shape[:2], mode="bicubic"
                     ).squeeze().cpu().numpy()
 
-                # STEP 3: Generate Results
+                
                 if mode == "Side-by-Side (Stereopair)":
                     result = make_sbs(img, depth_map)
                     st.subheader("Your 3D Result")
