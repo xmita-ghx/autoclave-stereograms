@@ -6,7 +6,8 @@ from PIL import Image, ImageDraw, ImageFont
 import io
 
 def apply_custom_theme():
-    st.markdown("""
+    # We define the CSS as a separate variable first to avoid TokenErrors
+    style_content = """
         <style>
         .stApp {
             background-color: #7A0D26; 
@@ -46,7 +47,8 @@ def apply_custom_theme():
             font-weight: bold;
         }
         </style>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(style_content, unsafe_allow_html=True)
 
 @st.cache_resource
 def load_model():
@@ -108,7 +110,7 @@ def create_text_depth_map(text, width=800, height=400):
     depth_map = cv2.GaussianBlur(depth_map, (5, 5), 0)
     return depth_map
 
-st.set_page_config(page_title="3D Stereogram Creator", layout="centered")
+st.set_page_config(page_title="Autoclave: 3D Stereogram Generator", layout="centered")
 apply_custom_theme()
 
 st.title("AUTOCLAVE:")
