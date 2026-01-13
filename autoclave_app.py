@@ -2,30 +2,27 @@ import streamlit as st
 import torch
 import cv2
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import io
 
 def apply_custom_theme():
     st.markdown("""
         <style>
-        /* Main background and text */
         .stApp {
-            background-color: #7A0D26; /* Changed from #000000 */
+            background-color: #7A0D26; 
             color: #FFFFFF;
         }
         
         /* Headers and text color */
         h1, h2, h3, p, span, label {
-        color: #000000 !important;
+            color: #000000 !important;
         }
 
-        /* Gold borders for image containers and uploaders */
         div[data-testid="stFileUploader"], .stImage > img {
             border: 2px solid #D4AF37 !important;
             border-radius: 10px;
         }
 
-        /* Light Purple Buttons */
         div.stButton > button {
             background-color: #A020F0 !important;
             color: white !important;
@@ -35,13 +32,18 @@ def apply_custom_theme():
         }
         
         div.stButton > button:hover {
-            background-color: #DDA0DD !important; /* Lighter purple on hover */
+            background-color: #DDA0DD !important;
             border: 1px solid #FFFFFF;
         }
 
-        /* Radio button text color */
         div[data-testid="stRadio"] label {
             color: #FFFFFF !important;
+        }
+        
+        /* Text input styling */
+        div[data-testid="stTextInput"] label {
+            color: #FFFFFF !important;
+            font-weight: bold;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -57,10 +59,8 @@ def load_model():
 
 def enhance_contrast(img):
     img_np = np.array(img)
-    # Convert to lab color space for better contrast manipulation
     lab = cv2.cvtColor(img_np, cv2.COLOR_RGB2LAB)
     l, a, b = cv2.split(lab)
-    # Apply CLAHE (Contrast Limited Adaptive Histogram Equalization)
     clahe = cv2.createCLAHE(clipLimit=5.0, tileGridSize=(8,8))
     cl = clahe.apply(l)
     enhanced_lab = cv2.merge((cl, a, b))
@@ -96,32 +96,54 @@ def make_magic_eye(depth, pattern_div=8):
             output[y, x] = output[y, x - pattern_w + shifts[y, x]]
     return Image.fromarray(output)
 
+def create_text_depth_map(text, width=800, height=400):
+    depth_map = np.zeros((height, width), dtype=np.uint8)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 3
+    thickness = 8
+    text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
+    text_x = (width - text_size[0]) // 2
+    text_y = (height + text_size[1]) // 2
+    cv2.putText(depth_map, text, (text_x, text_y), font, font_scale, 255, thickness, cv2.LINE_AA)
+    depth_map = cv2.GaussianBlur(depth_map, (5, 5), 0)
+    return depth_map
+
 st.set_page_config(page_title="3D Stereogram Creator", layout="centered")
 apply_custom_theme()
 
 st.title("AUTOCLAVE:")
 st.title("2D TO 3D STEREOGRAM CONVERTER")
 
-file = st.file_uploader("Upload Image (MAXIMUM: 5MB)   [Start with simple shapes! They should be high contrast images!]", type=['jpg', 'jpeg', 'png'])
+user_text = st.text_input("ENTER TEXT TO SEE THE STEREOGRAM OF:", placeholder="Type something...")
 
-if file:
-    MAX_FILE_SIZE = 5 * 1024 * 1024 
-    if file.size > MAX_FILE_SIZE:
-        st.error(f"FILE TOO LARGE: Limit is 5MB.")
-    else:
-        img = Image.open(file).convert("RGB")
-        
+file = st.file_uploader("Upload Image (MAXIMUM: 5MB) [Start with simple shapes!]", type=['jpg', 'jpeg', 'png'])
 
-        st.image(img, caption="Original Image", width=300)
-        
-        mode = st.radio("Choose 3D Mode:", ["Side-by-Side (Stereopair)", "Autostereogram (Hidden)"])
-        
-        if st.button("Generate 3D View"):
-            with st.spinner("Enhancing contrast & calculating depth..."):
+if user_text or file:
+    mode = st.radio("Choose 3D Mode:", ["Autostereogram (Hidden)", "Side-by-Side (Stereopair)"])
+    
+    if st.button("Generate 3D View"):
+        with st.spinner("Processing..."):
+            if user_text and not file:
+                depth_map = create_text_depth_map(user_text)
                 
+                # SHOW THE DEPTH MAP FOR THE TEXT
+                st.subheader("Depth map of your text!")
+                st.image(depth_map, caption="Text Depth Map", width=400)
+                
+                dummy_img = Image.fromarray(cv2.cvtColor(depth_map, cv2.COLOR_GRAY2RGB))
+                
+                if mode == "Autostereogram (Hidden)":
+                    result = make_magic_eye(depth_map.astype(float))
+                    st.subheader("Your Stereogram Result!")
+                    st.image(result, use_container_width=True, channels="L")
+                else:
+                    result = make_sbs(dummy_img, depth_map.astype(float))
+                    st.subheader("Your 3D Result")
+                    st.image(result, use_container_width=True)
+            
+            elif file:
+                img = Image.open(file).convert("RGB")
                 enhanced_img = enhance_contrast(img)
-                
-                
                 model, transform, device = load_model()
                 img_cv = cv2.cvtColor(np.array(enhanced_img), cv2.COLOR_RGB2BGR)
                 input_batch = transform(img_cv).to(device)
@@ -132,10 +154,9 @@ if file:
                         prediction.unsqueeze(1), size=img_cv.shape[:2], mode="bicubic"
                     ).squeeze().cpu().numpy()
 
-                
                 if mode == "Side-by-Side (Stereopair)":
-                    result = make_sbs(img, depth_map)
                     st.subheader("Your 3D Result")
+                    result = make_sbs(img, depth_map)
                     st.image(result, use_container_width=True)
                 else:
                     st.subheader("AI Generated Depth Map")
@@ -145,5 +166,5 @@ if file:
                     result = make_magic_eye(depth_map)
                     st.subheader("Your Stereogram Result!")
                     st.image(result, use_container_width=True, channels="L")
-                
-                st.success("Done! You can right-click to save.")
+            
+            st.success("Done! You can right-click to save.")
